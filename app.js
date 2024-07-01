@@ -1,11 +1,27 @@
 import express from 'express';
+import dotenv from 'dotenv';
+import connection from './db.js';
+import pageRoutes from './routes/pageRoute.js'
+import photoRoutes from './routes/photoRoute.js'
+
+dotenv.config();
+
+//connection to the DB
+connection();
 
 const app=express();
-const port=3000;
+const port=process.env.PORT;
 
-app.get("/",(req,res)=>{
-    res.send("Hello World");
-})
+//ejs template engine
+app.set("view engine","ejs");
+//static files middleware
+app.use(express.static("public"));
+app.use(express.json());
+
+//routes
+app.use("/",pageRoutes);
+app.use("/photos",photoRoutes);
+
 app.listen(port,()=>{
     console.log(`Application running on port:${port}`);
 })
