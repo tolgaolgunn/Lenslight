@@ -338,7 +338,9 @@ button {
     color: #f6388e;
 }
 .navbar-area {
-    float: left;
+    display: flex;
+    justify-content: center;
+    text-align: center;
 }
 .site-navbar ul {
     margin: 0;
