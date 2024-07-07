@@ -22,9 +22,9 @@ const createPhoto = async (req, res) => {
 const getAllPhotos=async(req,res)=>{
     try {
         const photos=await Photo.find({});
-        res.status(200).json({
-            succeeded:true,
+        res.status(200).render("photos",{
             photos,
+            link:'photos',
         });
     } catch (error) {
         console.log('Error finding photo:',error);
@@ -36,4 +36,21 @@ const getAllPhotos=async(req,res)=>{
     }
 }
 
-export { createPhoto,getAllPhotos };
+const getAPhotos=async(req,res)=>{
+    try {
+        const photo=await Photo.findById({_id:req.params.id})
+        res.status(200).render("photo",{
+            photo,
+            link:'photos',
+        });
+    } catch (error) {
+        console.log('Error finding photo:',error);
+        res.status(500).json({
+            succeeded:false,
+            message:'Failed to find photo',
+            error:error.message,
+        });
+    }
+}
+
+export { createPhoto,getAllPhotos,getAPhotos };
