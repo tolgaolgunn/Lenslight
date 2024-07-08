@@ -1,7 +1,11 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/userModel.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-// Kullanıcı oluşturma fonksiyonu
+dotenv.config();
+
+// Create a User
 const createUser = async (req, res) => {
     try {
         const user = await User.create(req.body);
@@ -19,7 +23,7 @@ const createUser = async (req, res) => {
     }
 };
 
-// Kullanıcı giriş fonksiyonu
+// Login
 const loginUser = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -34,9 +38,13 @@ const loginUser = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (isMatch) {
-            return res.status(200).json({
-                msg: 'Login successful',
+            const token = createToken(user._id);
+            res.cookie('jsonwebtoken',token,{
+                httpOnly:true,
+                maxAge:1000*60*60*24, //for 1 day
             });
+
+            res.redirect("/users/dashboard");
         } else {
             return res.status(401).json({
                 msg: 'Password is incorrect',
@@ -52,4 +60,14 @@ const loginUser = async (req, res) => {
     }
 };
 
-export { createUser, loginUser };
+const createToken=(userId)=>{
+    return jwt.sign({userId},process.env.JWT_SECRET,{expiresIn:'1d'})
+}
+
+const getDashboardPage = (req,res)=>{
+    res.render("dashboard",{
+        link:'dashboard'
+    });
+}
+
+export { createUser, loginUser,getDashboardPage };
