@@ -9,18 +9,26 @@ dotenv.config();
 const createUser = async (req, res) => {
     try {
         const user = await User.create(req.body);
-        res.status(201).json({
-            succeeded: true,
-            user,
-        });
+        res.status(201).json({user:user_id});
+        res.redirect("/login");
     } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).json({
-            succeeded: false,
-            message: 'Failed to create user',
-            error: error.message,
-        });
+        let errors2 = {};
+    
+        if (error.code === 11000) {
+            errors2.email = "Email already exists";
+        }
+    
+        if (error.name === 'ValidationError') {
+            Object.keys(error.errors).forEach((key) => {
+                errors2[key] = error.errors[key].message;
+            });
+        }
+    
+        res.status(400).json({ errors2 });
     }
+    
+    
+    
 };
 
 // Login
