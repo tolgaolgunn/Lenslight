@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import User from '../models/userModel.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import Photo from '../models/photoModel.js';
 
 dotenv.config();
 
@@ -72,9 +73,11 @@ const createToken=(userId)=>{
     return jwt.sign({userId},process.env.JWT_SECRET,{expiresIn:'1d'})
 }
 
-const getDashboardPage = (req,res)=>{
+const getDashboardPage = async (req,res)=>{
+    const photos = await Photo.find({user: res.locals.user._id})
     res.render("dashboard",{
-        link:'dashboard'
+        link:'dashboard',
+        photos
     });
 }
 

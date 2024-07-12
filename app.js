@@ -24,7 +24,7 @@ app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 
 //routes
-app.get("*",checkUser);
+app.use("*",checkUser);
 app.use("/",pageRoutes);
 app.use("/photos",photoRoutes);
 app.use("/users",userRoute);
