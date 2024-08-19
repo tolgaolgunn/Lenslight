@@ -87,12 +87,18 @@ const getAllUsers = async (req, res) => {
   
   const getAUser = async (req, res) => {
     try {
-      const user = await User.findById({ _id: req.params.id });  
+      const user = await User.findById({ _id: req.params.id }); 
+      
+      const inFollowers= user.followers.some((follower)=>{
+        return follower.equals(res.locals.user._id);
+      })
+      
       const photos = await Photo.find({ user: user._id });
       res.status(200).render('user', {
         user,
         photos,
         link: 'users',
+        inFollowers,
       });
     } catch (error) {
       res.status(500).json({
@@ -101,12 +107,68 @@ const getAllUsers = async (req, res) => {
       });
     }
   };
+
+ 
+
+  const follow = async (req, res) => {
+    try {
+      
+      let user =await User.findByIdAndUpdate(
+        {_id:req.params.id},//logged in user
+        {
+          $push: {followers:res.locals.user._id}//added followers array
+        },
+        {new:true}
+      );
+      user =await User.findByIdAndUpdate(
+        {_id:res.locals.user._id},//other users
+        {
+          $push: {followings: req.params.id}//added followings array
+        },
+        {new:true}
+      );  
+      res.status(200).redirect(`/users/${req.params.id}`);
+    } catch (error) {
+      res.status(500).json({
+        succeded: false,
+        error,
+      });
+    }
+  };
+  const unfollow = async (req, res) => {
+    try {
+      
+      let user =await User.findByIdAndUpdate(
+        {_id:req.params.id},//logged in user
+        {
+          $pull: {followers:res.locals.user._id}//removed followers array
+        },
+        {new:true}
+      );
+      user =await User.findByIdAndUpdate(
+        {_id:res.locals.user._id},//other users
+        {
+          $pull: {followings: req.params.id}//removed followings array
+        },
+        {new:true}
+      );  
+      res.status(200).redirect(`/users/${req.params.id}`)
+    } catch (error) {
+      res.status(500).json({
+        succeded: false,
+        error,
+      });
+    }
+  };
+
 const getDashboardPage = async (req, res) => {
     const photos = await Photo.find({ user: res.locals.user._id });
+    const user=await User.findById({_id:res.locals.user.id}).populate(['followers','followings',]);
     res.render("dashboard", {
         link: 'dashboard',
-        photos
+        photos,
+        user,
     });
 }
 
-export { createUser, loginUser, getDashboardPage, getAllUsers, getAUser };
+export { createUser, loginUser, getDashboardPage, getAllUsers, getAUser,follow ,unfollow};

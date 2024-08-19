@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import method_override from 'method-override';
 import connection from './db.js';
 import fileUpload from 'express-fileupload';
 import { v2 as cloudinary} from 'cloudinary';
@@ -30,7 +31,11 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
-app.use(fileUpload({useTempFiles:true}))
+app.use(fileUpload({useTempFiles:true}));
+app.use(method_override("_method",{
+    methods:['POST','GET'],
+}))
+
 
 //routes
 app.use("*",checkUser);

@@ -22,7 +22,19 @@ const userSchema = new Schema({
         type:String,
         required:[true,'Password is required'], 
         minLength:[5,'At least 5 characters'],
-    }
+    },
+    followers:[
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        },
+    ],
+    followings:[
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        },
+    ],
 },
 {
     timestamps:true

@@ -40,14 +40,7 @@ const getAllPhotos=async(req,res)=>{
         res.status(200).render("photos",{
             photos,
             link:'photos',
-        });
-
-        res.status(200).render("photos",{
-            photos,
-            link:'photos',
-        });
-
-        
+        });   
     } catch (error) {
         console.log('Error finding photo:',error);
         res.status(500).json({
