@@ -138,20 +138,6 @@ const getAllUsers = async (req, res) => {
   const unfollow = async (req, res) => {
     try {
       
-      let user =await User.findByIdAndUpdate(
-        {_id:req.params.id},//logged in user
-        {
-          $pull: {followers:res.locals.user._id}//removed followers array
-        },
-        {new:true}
-      );
-      user =await User.findByIdAndUpdate(
-        {_id:res.locals.user._id},//other users
-        {
-          $pull: {followings: req.params.id}//removed followings array
-        },
-        {new:true}
-      );  
       res.status(200).redirect(`/users/${req.params.id}`)
     } catch (error) {
       res.status(500).json({
